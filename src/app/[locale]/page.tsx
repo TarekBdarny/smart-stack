@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className="text-3xl text-red-500">
       <Button>Hello</Button>
