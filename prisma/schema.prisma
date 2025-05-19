@@ -1,0 +1,111 @@
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User { 
+id String @id @default(cuid())
+email String
+name String
+avatar String
+password String?
+phoneNumber String?
+location String?
+role UserRole @default(CUSTOMER) 
+clerkId String
+createdAt DateTime @default(now())
+updateAt DateTime @updatedAt
+orders Order[]
+  storeId      String? 
+workAt Store? @relation("StoreStaff", fields: [storeId], references: [id])
+ownedStores  Store[]  @relation("StoreOwner")
+
+
+}
+enum UserRole {
+  ADMIN
+  OWNER
+  STAFF
+  CUSTOMER
+}
+
+model Store {
+id String @id @default(cuid())
+ownerId String
+name String
+location String
+workHours String
+status Boolean // open or closed
+products Product[]
+history StoreHistory[]
+staff User[] @relation("StoreStaff")
+owner User @relation("StoreOwner", fields: [ownerId], references: [id])
+
+}
+
+model Product {
+  id String @id @default(cuid())
+  name String
+  stock Int
+  quantity Int
+  price Float
+  minStock Int
+  createdAt DateTime @default(now())
+
+  // relations
+  storeId String
+  categoryId String
+
+  store Store @relation(fields: [storeId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+  items OrderItem[]
+}
+model OrderItem {
+  id         String   @id @default(cuid())
+  orderId    String
+  productId  String
+  quantity   Int
+  price      Float
+
+  order      Order   @relation(fields: [orderId], references: [id])
+  product    Product @relation(fields: [productId], references: [id])
+}
+model Category {
+  id String @id @default(cuid())
+  name String
+  products Product[]
+}
+
+model Order{
+  id String @id @default(cuid())
+  price Float
+  status OrderStatus
+  customerId String
+  storeHistoryId String
+
+  storeHistory StoreHistory @relation(fields: [storeHistoryId], references: [id])
+  customer User @relation(fields: [customerId], references: [id])
+  
+  items OrderItem[]
+
+}
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model StoreHistory {
+  id String @id @default(cuid())
+  storeId String
+  history Store @relation(fields: [storeId], references: [id])
+  
+  
+  orders Order[]
+}
