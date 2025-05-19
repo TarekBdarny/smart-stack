@@ -14,7 +14,6 @@ id String @id @default(cuid())
 email String
 name String
 avatar String
-password String?
 phoneNumber String?
 location String?
 role UserRole @default(CUSTOMER) 
@@ -22,7 +21,7 @@ clerkId String
 createdAt DateTime @default(now())
 updateAt DateTime @updatedAt
 orders Order[]
-  storeId      String? 
+storeId String? 
 workAt Store? @relation("StoreStaff", fields: [storeId], references: [id])
 ownedStores  Store[]  @relation("StoreOwner")
 
@@ -42,7 +41,10 @@ name String
 location String
 workHours String
 status Boolean // open or closed
+profit Float
+
 products Product[]
+
 history StoreHistory[]
 staff User[] @relation("StoreStaff")
 owner User @relation("StoreOwner", fields: [ownerId], references: [id])
